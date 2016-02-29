@@ -7,7 +7,6 @@ IS211 - Week 4 - Assignment 4 Part I
 
 import time
 
-
 def sequential_search(seq, lookup):
     """
     Sequential search algorithm
@@ -58,7 +57,7 @@ def binary_search_iterative(seq, item):
     head = 0
     last = len(seq) - 1
     res = -1
-    if last != head:
+    if last != 0:
         while head < last:
             middle = (head + last) // 2
             if seq[middle] == item:
@@ -80,52 +79,27 @@ def binary_search_recursive(seq, item):
     :return: (Int) - Index of match
     """
     start = time.time()
-    head = 0
-    curr = len(seq)
     res = -1
     stop = False
-    if curr != head and not stop:
-        middle = (head + len) //2
-        if seq[middle] == item:
-            res = middle
+    if len(seq) == 0:
+        stop = True
+    if not stop:
+        midpoint = len(seq) // 2
+        if seq[midpoint] == item:
+            res = midpoint
             stop = True
-        elif seq[middle] < item:
-            binary_search_recursive(seq[middle - 1], item)
+        elif item < seq[midpoint]:
+            return binary_search_recursive(seq[:midpoint], item)
         else:
-            binary_search_recursive(seq[middle + 1], item)
+            return binary_search_recursive(seq[midpoint + 1:], item)
+
     end = time.time()
     return (res, end - start)
 
 
-def shuffle_list(seq):
-    """
-    Shuffles a list of any size
-    :param seq: (List) - List to shuffle
-    :return: (List) - Shuffled list
-    """
-    out = []
-    for i in xrange(len(seq)):
-        num = random.choice(seq)
-        seq.remove(num)
-        out.append(num)
-    return out
-
-def average(seq):
-    """
-    Calculates an average
-    :param seq: List
-    :return: Numeric
-    """
-    return (sum(seq)/len(seq))
-
 if __name__ == '__main__':
     import random
-    import time
-
-    SEQ = dict()
-    SEQ['500'] = shuffle_list([x for x in xrange(500)])
-    SEQ['1000'] = shuffle_list([x for x in xrange(1000)])
-    SEQ['10000'] = shuffle_list([x for x in xrange(10000)])
+    from data import *
 
     stats = {'seq': 0.0,
              'oseq': 0.0,
@@ -133,21 +107,24 @@ if __name__ == '__main__':
              'rbin': 0.0}
 
     for k, nums in SEQ.iteritems():
-        for count in xrange(100):
-            length = len(nums)
+        print 'Size: ', k
+        length = len(nums)
+
+        for count in xrange(101):
             stats['seq'] += sequential_search(nums, -1)[1]
             stats['oseq'] += ordered_sequential_search(nums, -1)[1]
             stats['bin'] += binary_search_iterative(nums, -1)[1]
             stats['rbin'] += binary_search_iterative(nums, -1)[1]
+        print 'Count: ', count
         for key, stat in stats.iteritems():
-                type = 'Sequential Search'
-                if key == 'oseq':
-                    type = 'Ordered Sequential Search'
-                elif key == 'bin':
-                    type = 'Iterative Binary Search'
-                elif key == 'rbin':
-                    type = 'Recursive Binary Search'
-                type + ' took %10.7f seconds to run, on average' % (stat/length)
+            search_type = 'Sequential Search'
+            if key == 'oseq':
+                search_type = 'Ordered Sequential Search'
+            elif key == 'bin':
+                search_type = 'Iterative Binary Search'
+            elif key == 'rbin':
+                search_type = 'Recursive Binary Search'
+            print search_type + ' took %10.7f seconds to run, on average' % (stat / length)
 
 
 
